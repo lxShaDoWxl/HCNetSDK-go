@@ -25,6 +25,10 @@ BOOL msgCallBack_V31_cgo (LONG lCommand, LPNET_DVR_ALARMER pAlarmer, char *pAlar
     BOOL msgCallBack_V31_Go(LONG, void*, char*, DWORD, void*);
     return msgCallBack_V31_Go(lCommand, pAlarmer, pAlarmInfo, dwBufLen, pUser);
 }
+void msgCallBack_cgo (LONG lCommand, LPNET_DVR_ALARMER pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser) {
+    void msgCallBack_Go(LONG, void*, char*, DWORD, void*);
+     msgCallBack_Go(lCommand, pAlarmer, pAlarmInfo, dwBufLen, pUser);
+}
 */
 import "C"
 import "unsafe"

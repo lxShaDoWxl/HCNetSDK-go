@@ -2,6 +2,7 @@ package hikvision
 
 import "C"
 import (
+	"github.com/lxShaDoWxl/HCNetSDK-go/hikvision/types"
 	"unsafe"
 )
 
@@ -43,8 +44,8 @@ type LPNET_DVR_INIT_CFG_ABILITY *NET_DVR_INIT_CFG_ABILITY
 
 // 组件库加载路径信息结构体
 type NET_DVR_LOCAL_SDK_PATH struct {
-	SPath [NET_SDK_MAX_FILE_PATH]byte // 组件库地址
-	ByRes [128]byte                   // 保留
+	SPath [types.NET_SDK_MAX_FILE_PATH]byte // 组件库地址
+	ByRes [128]byte                         // 保留
 }
 type LPNET_DVR_LOCAL_SDK_PATH *NET_DVR_LOCAL_SDK_PATH
 
@@ -179,7 +180,7 @@ type LPNET_DVR_LOCAL_PTZ_CFG *NET_DVR_LOCAL_PTZ_CFG
 
 // 证书校验参数配置结构体
 type NET_DVR_LOCAL_CERTIFICATION struct {
-	SzLoadPath [MAX_FILE_PATH_LEN]byte
+	SzLoadPath [types.MAX_FILE_PATH_LEN]byte
 	FnCB       FnCertVerifyResultCallBack
 	PUserData  unsafe.Pointer
 	ByRes      [64]byte
@@ -192,7 +193,7 @@ type FnCertVerifyResultCallBack func(int32, LPNET_DVR_CETTIFICATE_INFO, *byte) b
 // 证书校验结构体
 type NET_DVR_CETTIFICATE_INFO struct {
 	DwSize        int32
-	SzIssuer      [MAX_CERTIFICATE_ISSUER_LEN]byte //证书颁发者
+	SzIssuer      [types.MAX_CERTIFICATE_ISSUER_LEN]byte //证书颁发者
 	StruStartTime NET_DVR_TIME
 	StruEndTime   NET_DVR_TIME
 	ByRes1        [1024]byte
@@ -219,7 +220,7 @@ type LPNET_DVR_LOCAL_PORT_MULTI_CFG *NET_DVR_LOCAL_PORT_MULTI_CFG
 
 //------------------------ SDK版本、状态、能力 ------------------------
 
-//SDK状态信息(9000新增)
+// SDK状态信息(9000新增)
 type NET_DVR_SDKSTATE struct {
 	DwTotalLoginNum         uint32 //当前login用户数
 	DwTotalRealPlayNum      uint32 //当前realplay路数
@@ -240,7 +241,7 @@ type NET_DVR_SDKSTATE struct {
 }
 type LPNET_DVR_SDKSTATE *NET_DVR_SDKSTATE
 
-//SDK功能支持信息(9000新增)
+// SDK功能支持信息(9000新增)
 type NET_DVR_SDKABL struct {
 	DwMaxLoginNum      uint32 //最大login用户数 MAX_LOGIN_USERS
 	DwMaxRealPlayNum   uint32 //最大realplay路数 WATCH_NUM
@@ -261,19 +262,19 @@ type LPNET_DVR_SDKABL *NET_DVR_SDKABL
 
 // 设备激活参数结构体
 type NET_DVR_ACTIVATECFG struct {
-	DwSize    uint32           //结构体大小
-	SPassword [PASSWD_LEN]byte //初始密码
+	DwSize    uint32                 //结构体大小
+	SPassword [types.PASSWD_LEN]byte //初始密码
 	ByRes     [108]byte
 }
 type LPNET_DVR_ACTIVATECFG *NET_DVR_ACTIVATECFG
 
 // 用户登录参数结构体
 type NET_DVR_USER_LOGIN_INFO struct {
-	SDeviceAddress [NET_DVR_DEV_ADDRESS_MAX_LEN]byte
-	ByUseTransport byte //是否启用能力集透传，0--不启用透传，默认，1--启用透传
+	SDeviceAddress [types.NET_DVR_DEV_ADDRESS_MAX_LEN]byte
+	ByUseTransport byte //Whether to enable capability set transparent transmission, 0--disable transparent transmission, default, 1--enable transparent transmission
 	WPort          uint16
-	SUserName      [NET_DVR_LOGIN_USERNAME_MAX_LEN]byte
-	SPassword      [NET_DVR_LOGIN_PASSWD_MAX_LEN]byte
+	SUserName      [types.NET_DVR_LOGIN_USERNAME_MAX_LEN]byte
+	SPassword      [types.NET_DVR_LOGIN_PASSWD_MAX_LEN]byte
 	CbLoginResult  FLoginResultCallBack
 	PUser          unsafe.Pointer
 	BUseAsynLogin  int
@@ -292,19 +293,19 @@ type FLoginResultCallBack func(lUserID int, dwResult uint32, lpDeviceInfo LPNET_
 
 // 设备参数结构体
 type NET_DVR_DEVICEINFO_V30 struct {
-	SSerialNumber     [SERIALNO_LEN]byte //序列号
-	ByAlarmInPortNum  byte               //报警输入个数
-	ByAlarmOutPortNum byte               //报警输出个数
-	ByDiskNum         byte               //硬盘个数
-	ByDVRType         byte               //设备类型, 1:DVR 2:ATM DVR 3:DVS ......
-	ByChanNum         byte               //模拟通道个数
-	ByStartChan       byte               //起始通道号,例如DVS-1,DVR - 1
-	ByAudioChanNum    byte               //语音通道数
-	ByIPChanNum       byte               //最大数字通道个数，低位
-	ByZeroChanNum     byte               //零通道编码个数 //2010-01-16
-	ByMainProto       byte               //主码流传输协议类型 0-private, 1-rtsp,2-同时支持private和rtsp
-	BySubProto        byte               //子码流传输协议类型0-private, 1-rtsp,2-同时支持private和rtsp
-	BySupport         byte               //能力，位与结果为0表示不支持，1表示支持，
+	SSerialNumber     [types.SERIALNO_LEN]byte //序列号
+	ByAlarmInPortNum  byte                     //报警输入个数
+	ByAlarmOutPortNum byte                     //报警输出个数
+	ByDiskNum         byte                     //硬盘个数
+	ByDVRType         byte                     //设备类型, 1:DVR 2:ATM DVR 3:DVS ......
+	ByChanNum         byte                     //模拟通道个数
+	ByStartChan       byte                     //起始通道号,例如DVS-1,DVR - 1
+	ByAudioChanNum    byte                     //语音通道数
+	ByIPChanNum       byte                     //最大数字通道个数，低位
+	ByZeroChanNum     byte                     //零通道编码个数 //2010-01-16
+	ByMainProto       byte                     //主码流传输协议类型 0-private, 1-rtsp,2-同时支持private和rtsp
+	BySubProto        byte                     //子码流传输协议类型0-private, 1-rtsp,2-同时支持private和rtsp
+	BySupport         byte                     //能力，位与结果为0表示不支持，1表示支持，
 	//bySupport & 0x1, 表示是否支持智能搜索
 	//bySupport & 0x2, 表示是否支持备份
 	//bySupport & 0x4, 表示是否支持压缩参数能力获取
@@ -450,20 +451,20 @@ type NET_DVR_CARD_CFG struct {
 	DwSize            uint32
 	DwModifyParamType uint32
 	// 需要修改的卡参数，设置卡参数时有效，按位表示，每位代表一种参数，1为需要修改，0为不修改
-	ByCardNo        [ACS_CARD_NO_LEN]byte //卡号
-	ByCardValid     byte                  //卡是否有效，0-无效，1-有效（用于删除卡，设置时置为0进行删除，获取时此字段始终为1）
-	ByCardType      byte                  //卡类型，1-普通卡，2-残疾人卡，3-黑名单卡，4-巡更卡，5-胁迫卡，6-超级卡，7-来宾卡，8-解除卡，默认普通卡
-	ByLeaderCard    byte                  //是否为首卡，1-是，0-否
+	ByCardNo        [types.ACS_CARD_NO_LEN]byte //卡号
+	ByCardValid     byte                        //卡是否有效，0-无效，1-有效（用于删除卡，设置时置为0进行删除，获取时此字段始终为1）
+	ByCardType      byte                        //卡类型，1-普通卡，2-残疾人卡，3-黑名单卡，4-巡更卡，5-胁迫卡，6-超级卡，7-来宾卡，8-解除卡，默认普通卡
+	ByLeaderCard    byte                        //是否为首卡，1-是，0-否
 	ByRes1          byte
-	DwDoorRight     uint32                                      //门权限，按位表示，1为有权限，0为无权限，从低位到高位表示对门1-N是否有权限
-	StruValid       NET_DVR_VALID_PERIOD_CFG                    //有效期参数
-	DwBelongGroup   uint32                                      //所属群组，按位表示，1-属于，0-不属于，从低位到高位表示是否从属群组1-N
-	ByCardPassword  [CARD_PASSWORD_LEN]byte                     //卡密码
-	ByCardRightPlan [MAX_DOOR_NUM][MAX_CARD_RIGHT_PLAN_NUM]byte //卡权限计划，取值为计划模板编号，同个门不同计划模板采用权限或的方式处理
-	DwMaxSwipeTime  uint32                                      //最大刷卡次数，0为无次数限制
-	DwSwipeTime     uint32                                      //已刷卡次数
-	WRoomNumber     uint16                                      //房间号
-	WFloorNumber    int16                                       //层号
+	DwDoorRight     uint32                                                  //门权限，按位表示，1为有权限，0为无权限，从低位到高位表示对门1-N是否有权限
+	StruValid       NET_DVR_VALID_PERIOD_CFG                                //有效期参数
+	DwBelongGroup   uint32                                                  //所属群组，按位表示，1-属于，0-不属于，从低位到高位表示是否从属群组1-N
+	ByCardPassword  [types.CARD_PASSWORD_LEN]byte                           //卡密码
+	ByCardRightPlan [types.MAX_DOOR_NUM][types.MAX_CARD_RIGHT_PLAN_NUM]byte //卡权限计划，取值为计划模板编号，同个门不同计划模板采用权限或的方式处理
+	DwMaxSwipeTime  uint32                                                  //最大刷卡次数，0为无次数限制
+	DwSwipeTime     uint32                                                  //已刷卡次数
+	WRoomNumber     uint16                                                  //房间号
+	WFloorNumber    int16                                                   //层号
 	ByRes2          [20]byte
 }
 
@@ -476,14 +477,13 @@ type NET_DVR_VALID_PERIOD_CFG struct {
 	ByTimeDurationNo byte            //有效期索引,从0开始（时间段通过SDK设置给锁，后续在制卡时，只需要传递有效期索引即可，以减少数据量）
 	StruBeginTime    NET_DVR_TIME_EX //有效期起始时间
 	StruEndTime      NET_DVR_TIME_EX //有效期结束时间
-	ByTimeType       byte            //时间类型：0-设备本地时间（默认），1-UTC时间（对于struBeginTime，struEndTime字段有效）
-	ByRes2           [31]byte
+	ByRes2           [32]byte
 }
 
 type LPNET_DVR_VALID_PERIOD_CFG *NET_DVR_VALID_PERIOD_CFG
 
 type NET_DVR_TIME_EX struct {
-	WYear    uint16
+	WYear    types.WORD
 	ByMonth  byte
 	ByDay    byte
 	ByHour   byte
@@ -493,50 +493,6 @@ type NET_DVR_TIME_EX struct {
 }
 
 type LPNET_DVR_TIME_EX *NET_DVR_TIME_EX
-
-type NET_DVR_CARD_CFG_V50 struct {
-	DwSize            uint32
-	DwModifyParamType uint32
-	// 需要修改的卡参数，设置卡参数时有效，按位表示，每位代表一种参数，1为需要修改，0为不修改
-	ByCardNo           [ACS_CARD_NO_LEN]byte                             //卡号
-	ByCardValid        byte                                              //卡是否有效，0-无效，1-有效（用于删除卡，设置时置为0进行删除，获取时此字段始终为1）
-	ByCardType         byte                                              //卡类型，1-普通卡，2-残疾人卡，3-黑名单卡，4-巡更卡，5-胁迫卡，6-超级卡，7-来宾卡，8-解除卡，9-员工卡，10-应急卡，11-应急管理卡（用于授权临时卡权限，本身不能开门），默认普通卡
-	ByLeaderCard       byte                                              //是否为首卡，1-是，0-否
-	ByUserType         byte                                              // 0 – 普通用户1 - 管理员用户;
-	ByDoorRight        [MAX_DOOR_NUM_256]byte                            //门权限(楼层权限、锁权限)，按位表示，1为有权限，0为无权限，从低位到高位表示对门（锁）1-N是否有权限
-	StruValid          NET_DVR_VALID_PERIOD_CFG                          //有效期参数
-	ByBelongGroup      [MAX_GROUP_NUM_128]byte                           //所属群组，按字节表示，1-属于，0-不属于
-	ByCardPassword     [CARD_PASSWORD_LEN]byte                           //卡密码
-	WCardRightPlan     [MAX_DOOR_NUM_256][MAX_CARD_RIGHT_PLAN_NUM]uint16 //卡权限计划，取值为计划模板编号，同个门（锁）不同计划模板采用权限或的方式处理
-	DwMaxSwipeTime     uint32                                            //最大刷卡次数，0为无次数限制（开锁次数）
-	DwSwipeTime        uint32                                            //已刷卡次数
-	WRoomNumber        uint16                                            //房间号
-	WFloorNumber       int16                                             //层号
-	DwEmployeeNo       uint32                                            //工号（用户ID）
-	ByName             [NAME_LEN]byte                                    //姓名
-	WDepartmentNo      uint16                                            //部门编号
-	WSchedulePlanNo    uint16                                            //排班计划编号
-	BySchedulePlanType byte                                              //排班计划类型：0-无意义、1-个人、2-部门
-	ByRightType        byte                                              //下发权限类型：0-普通发卡权限、1-二维码权限、2-蓝牙权限（可视对讲设备二维码权限配置项：房间号、卡号（虚拟卡号）、最大刷卡次数（开锁次数）、有效期参数；蓝牙权限：卡号（萤石APP账号）、其他参数配置与普通发卡权限一致）
-	ByRes2             [2]byte
-	DwLockID           uint32                  //锁ID
-	ByLockCode         [MAX_LOCK_CODE_LEN]byte //锁代码
-	ByRoomCode         [MAX_DOOR_CODE_LEN]byte //房间代码
-	//按位表示，0-无权限，1-有权限
-	//第0位表示：弱电报警
-	//第1位表示：开门提示音
-	//第2位表示：限制客卡
-	//第3位表示：通道
-	//第4位表示：反锁开门
-	//第5位表示：巡更功能
-	DwCardRight     uint32 //卡权限
-	DwPlanTemplate  uint32 //计划模板(每天)各时间段是否启用，按位表示，0--不启用，1-启用
-	DwCardUserId    uint32 //持卡人ID
-	ByCardModelType byte   //0-空，1- MIFARE S50，2- MIFARE S70，3- FM1208 CPU卡，4- FM1216 CPU卡，5-国密CPU卡，6-身份证，7- NFC
-	ByRes3          [51]byte
-	BySIMNum        [NAME_LEN] /*32*/ byte //SIM卡号（手机号）
-}
-type LPNET_DVR_CARD_CFG_V50 *NET_DVR_CARD_CFG_V50
 
 // enum CFG_SEND_DATA_TYPE
 type CFG_SEND_DATA_TYPE int32
@@ -559,8 +515,8 @@ const (
 // 获取卡参数的发送数据
 type NET_DVR_CARD_CFG_SEND_DATA struct {
 	DwSize       uint32
-	ByCardNo     [ACS_CARD_NO_LEN]byte //卡号
-	DwCardUserId uint32                //持卡人ID
+	ByCardNo     [types.ACS_CARD_NO_LEN]byte //卡号
+	DwCardUserId uint32                      //持卡人ID
 	ByRes        [12]byte
 }
 type LPNET_DVR_CARD_CFG_SEND_DATA *NET_DVR_CARD_CFG_SEND_DATA
@@ -571,12 +527,12 @@ type LPNET_DVR_CARD_CFG_SEND_DATA *NET_DVR_CARD_CFG_SEND_DATA
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FACE_PARAM_COND.html
 type NET_DVR_FACE_PARAM_COND struct {
 	DwSize             uint32
-	ByCardNo           [ACS_CARD_NO_LEN]byte         //人脸关联的卡号（设置时该参数可不设置）
-	ByEnableCardReader [MAX_CARD_READER_NUM_512]byte //人脸的读卡器是否有效，0-无效，1-有效（设置时该参数可不设置）
-	DwFaceNum          uint32                        //设置或获取人脸数量，获取时置为0xffffffff表示获取所有人脸信息
-	ByFaceID           byte                          //人脸编号，有效值范围为1-2  0xff表示该卡所有人脸（设置时该参数可不设置）
-	ByFaceDataType     byte                          //人脸数据类型：0-模板（默认），1-图片
-	ByRes              [126]byte                     //保留
+	ByCardNo           [types.ACS_CARD_NO_LEN]byte         //人脸关联的卡号（设置时该参数可不设置）
+	ByEnableCardReader [types.MAX_CARD_READER_NUM_512]byte //人脸的读卡器是否有效，0-无效，1-有效（设置时该参数可不设置）
+	DwFaceNum          uint32                              //设置或获取人脸数量，获取时置为0xffffffff表示获取所有人脸信息
+	ByFaceID           byte                                //人脸编号，有效值范围为1-2  0xff表示该卡所有人脸（设置时该参数可不设置）
+	ByFaceDataType     byte                                //人脸数据类型：0-模板（默认），1-图片
+	ByRes              [126]byte                           //保留
 }
 type LPNET_DVR_FACE_PARAM_COND *NET_DVR_FACE_PARAM_COND
 
@@ -584,12 +540,12 @@ type LPNET_DVR_FACE_PARAM_COND *NET_DVR_FACE_PARAM_COND
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FACE_PARAM_CFG.html
 type NET_DVR_FACE_PARAM_CFG struct {
 	DwSize             uint32
-	ByCardNo           [ACS_CARD_NO_LEN]byte         //人脸关联的卡号
-	DwFaceLen          uint32                        //人脸数据长度，最大支持 200k 图片，可选：<DES加密处理>，设备端返回的即加密后的数据
-	PFaceBuffer        unsafe.Pointer                //人脸数据指针
-	ByEnableCardReader [MAX_CARD_READER_NUM_512]byte //需要下发人脸的读卡器，按数组表示，从低位到高位表示，0-不下发该读卡器，1-下发到该读卡器
-	ByFaceID           byte                          //人脸编号，有效值范围为1-2
-	ByFaceDataType     byte                          //人脸数据类型：0-模板（默认），1-图片
+	ByCardNo           [types.ACS_CARD_NO_LEN]byte         //人脸关联的卡号
+	DwFaceLen          uint32                              //人脸数据长度，最大支持 200k 图片，可选：<DES加密处理>，设备端返回的即加密后的数据
+	PFaceBuffer        unsafe.Pointer                      //人脸数据指针
+	ByEnableCardReader [types.MAX_CARD_READER_NUM_512]byte //需要下发人脸的读卡器，按数组表示，从低位到高位表示，0-不下发该读卡器，1-下发到该读卡器
+	ByFaceID           byte                                //人脸编号，有效值范围为1-2
+	ByFaceDataType     byte                                //人脸数据类型：0-模板（默认），1-图片
 	ByRes              [126]byte
 }
 type LPNET_DVR_FACE_PARAM_CFG *NET_DVR_FACE_PARAM_CFG
@@ -598,13 +554,13 @@ type LPNET_DVR_FACE_PARAM_CFG *NET_DVR_FACE_PARAM_CFG
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FACE_PARAM_STATUS.html
 type NET_DVR_FACE_PARAM_STATUS struct {
 	DwSize                 uint32
-	ByCardNo               [ACS_CARD_NO_LEN]byte         //人脸关联的卡号
-	ByCardReaderRecvStatus [MAX_CARD_READER_NUM_512]byte //人脸读卡器状态，按字节表示，0-失败，1-成功，2-重试或人脸质量差，3-内存已满(人脸数据满)，4-已存在该人脸，5-非法人脸ID
+	ByCardNo               [types.ACS_CARD_NO_LEN]byte         //人脸关联的卡号
+	ByCardReaderRecvStatus [types.MAX_CARD_READER_NUM_512]byte //人脸读卡器状态，按字节表示，0-失败，1-成功，2-重试或人脸质量差，3-内存已满(人脸数据满)，4-已存在该人脸，5-非法人脸ID
 	//,6-算法建模失败，7-未下发卡权限，8-未定义（保留），9-人眼间距小距小，10-图片数据长度小于1KB，11-图片格式不符（png/jpg/bmp）,12-图片像素数量超过上限，13-图片像素数量低于下限，14-图片信息校验失败，15-图片解码失败，16-人脸检测失败，17-人脸评分失败
-	ByErrorMsg     [ERROR_MSG_LEN]byte //下发错误信息，当byCardReaderRecvStatus为4时，表示已存在人脸对应的卡号
-	DwCardReaderNo uint32              //纹读卡器编号，可用于下发错误返回
-	ByTotalStatus  byte                //下发总的状态，0-当前人脸未下完所有读卡器，1-已下完所有读卡器(这里的所有指的是门禁主机往所有的读卡器下发了，不管成功与否)
-	ByFaceID       byte                //人脸编号，有效值范围为1-2
+	ByErrorMsg     [types.ERROR_MSG_LEN]byte //下发错误信息，当byCardReaderRecvStatus为4时，表示已存在人脸对应的卡号
+	DwCardReaderNo uint32                    //纹读卡器编号，可用于下发错误返回
+	ByTotalStatus  byte                      //下发总的状态，0-当前人脸未下完所有读卡器，1-已下完所有读卡器(这里的所有指的是门禁主机往所有的读卡器下发了，不管成功与否)
+	ByFaceID       byte                      //人脸编号，有效值范围为1-2
 	ByRes          [130]byte
 }
 type LPNET_DVR_FACE_PARAM_STATUS *NET_DVR_FACE_PARAM_STATUS
@@ -671,12 +627,12 @@ type LPNET_VCA_POINT *NET_VCA_POINT
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FINGER_PRINT_INFO_COND.html
 type NET_DVR_FINGER_PRINT_INFO_COND struct {
 	DwSize             uint32
-	ByCardNo           [ACS_CARD_NO_LEN]byte         //指纹关联的卡号
-	ByEnableCardReader [MAX_CARD_READER_NUM_512]byte //指纹的读卡器信息，按数组表示
-	DwFingerPrintNum   uint32                        //设置或获取卡数量，获取时置为0xffffffff表示获取所有卡信息
-	ByFingerPrintID    byte                          //手指编号，有效值范围为-10   0xff表示该卡所有指纹
-	ByCallbackMode     byte                          //设备回调方式，0-设备所有读卡器下完了范围，1-在时间段内下了部分也返回
-	ByRes1             [26]byte                      //保留
+	ByCardNo           [types.ACS_CARD_NO_LEN]byte         //指纹关联的卡号
+	ByEnableCardReader [types.MAX_CARD_READER_NUM_512]byte //指纹的读卡器信息，按数组表示
+	DwFingerPrintNum   uint32                              //设置或获取卡数量，获取时置为0xffffffff表示获取所有卡信息
+	ByFingerPrintID    byte                                //手指编号，有效值范围为-10   0xff表示该卡所有指纹
+	ByCallbackMode     byte                                //设备回调方式，0-设备所有读卡器下完了范围，1-在时间段内下了部分也返回
+	ByRes1             [26]byte                            //保留
 }
 type LPNET_DVR_FINGER_PRINT_INFO_COND *NET_DVR_FINGER_PRINT_INFO_COND
 
@@ -684,13 +640,13 @@ type LPNET_DVR_FINGER_PRINT_INFO_COND *NET_DVR_FINGER_PRINT_INFO_COND
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FINGER_PRINT_CFG.html
 type NET_DVR_FINGER_PRINT_CFG struct {
 	DwSize             uint32
-	ByCardNo           [ACS_CARD_NO_LEN]byte         //指纹关联的卡号
-	DwFingerPrintLen   uint32                        //指纹数据长度
-	ByEnableCardReader [MAX_CARD_READER_NUM_512]byte //需要下发指纹的读卡器，按数组表示，0-不下发该读卡器，1-下发到该读卡器
-	ByFingerPrintID    byte                          //手指编号，有效值范围为1-10
-	ByFingerType       byte                          //指纹类型  0-普通指纹，1-胁迫指纹
+	ByCardNo           [types.ACS_CARD_NO_LEN]byte         //指纹关联的卡号
+	DwFingerPrintLen   uint32                              //指纹数据长度
+	ByEnableCardReader [types.MAX_CARD_READER_NUM_512]byte //需要下发指纹的读卡器，按数组表示，0-不下发该读卡器，1-下发到该读卡器
+	ByFingerPrintID    byte                                //手指编号，有效值范围为1-10
+	ByFingerType       byte                                //指纹类型  0-普通指纹，1-胁迫指纹
 	ByRes1             [30]byte
-	ByFingerData       [MAX_FINGER_PRINT_LEN]byte //指纹数据内容
+	ByFingerData       [types.MAX_FINGER_PRINT_LEN]byte //指纹数据内容
 	ByRes              [64]byte
 }
 type LPNET_DVR_FINGER_PRINT_CFG *NET_DVR_FINGER_PRINT_CFG
@@ -699,14 +655,14 @@ type LPNET_DVR_FINGER_PRINT_CFG *NET_DVR_FINGER_PRINT_CFG
 // See https://open.hikvision.com/hardware/structures/NET_DVR_FINGER_PRINT_STATUS.html
 type NET_DVR_FINGER_PRINT_STATUS struct {
 	DwSize                 uint32
-	ByCardNo               [ACS_CARD_NO_LEN]byte         //指纹关联的卡号
-	ByCardReaderRecvStatus [MAX_CARD_READER_NUM_512]byte //指纹读卡器状态，按字节表示，0-失败，1-成功，2-该指纹模组不在线，3-重试或指纹质量差，4-内存已满，5-已存在该指纹，6-已存在该指纹ID，7-非法指纹ID，8-该指纹模组无需配置
-	ByFingerPrintID        byte                          //手指编号，有效值范围为1-10
-	ByFingerType           byte                          //指纹类型  0-普通指纹，1-胁迫指纹
-	ByTotalStatus          byte                          //下发总的状态，0-当前指纹未下完所有读卡器，1-已下完所有读卡器(这里的所有指的是门禁主机往所有的读卡器下发了，不管成功与否)
+	ByCardNo               [types.ACS_CARD_NO_LEN]byte         //指纹关联的卡号
+	ByCardReaderRecvStatus [types.MAX_CARD_READER_NUM_512]byte //指纹读卡器状态，按字节表示，0-失败，1-成功，2-该指纹模组不在线，3-重试或指纹质量差，4-内存已满，5-已存在该指纹，6-已存在该指纹ID，7-非法指纹ID，8-该指纹模组无需配置
+	ByFingerPrintID        byte                                //手指编号，有效值范围为1-10
+	ByFingerType           byte                                //指纹类型  0-普通指纹，1-胁迫指纹
+	ByTotalStatus          byte                                //下发总的状态，0-当前指纹未下完所有读卡器，1-已下完所有读卡器(这里的所有指的是门禁主机往所有的读卡器下发了，不管成功与否)
 	ByRes1                 byte
-	ByErrorMsg             [ERROR_MSG_LEN]byte //下发错误信息，当byCardReaderRecvStatus为5时，表示已存在指纹对应的卡号
-	DwCardReaderNo         uint32              //非0表示错误信息byErrMsg有效，其值代表byErrMsg对应的读卡器编号（具体什么错误查看byCardReaderRecvStatus对应编号的值）。0时表示无错误信息
+	ByErrorMsg             [types.ERROR_MSG_LEN]byte //下发错误信息，当byCardReaderRecvStatus为5时，表示已存在指纹对应的卡号
+	DwCardReaderNo         uint32                    //非0表示错误信息byErrMsg有效，其值代表byErrMsg对应的读卡器编号（具体什么错误查看byCardReaderRecvStatus对应编号的值）。0时表示无错误信息
 	ByRes                  [24]byte
 }
 type LPNET_DVR_FINGER_PRINT_STATUS *NET_DVR_FINGER_PRINT_STATUS
@@ -723,12 +679,12 @@ type LPNET_DVR_CAPTURE_FINGERPRINT_COND *NET_DVR_CAPTURE_FINGERPRINT_COND
 // 指纹信息采集结果结构体
 type NET_DVR_CAPTURE_FINGERPRINT_CFG struct {
 	DwSize                uint32
-	DwFingerPrintDataSize uint32                     //指纹数据大小
-	ByFingerData          [MAX_FINGER_PRINT_LEN]byte //指纹数据内容
-	DwFingerPrintPicSize  uint32                     //指纹图片大小，等于0时，代表无指纹图片数据
-	PFingerPrintPicBuffer *byte                      //指纹图片缓存
-	ByFingerNo            byte                       //手指编号，范围1-10
-	ByFingerPrintQuality  byte                       //指纹质量，范围1-100
+	DwFingerPrintDataSize uint32                           //指纹数据大小
+	ByFingerData          [types.MAX_FINGER_PRINT_LEN]byte //指纹数据内容
+	DwFingerPrintPicSize  uint32                           //指纹图片大小，等于0时，代表无指纹图片数据
+	PFingerPrintPicBuffer *byte                            //指纹图片缓存
+	ByFingerNo            byte                             //手指编号，范围1-10
+	ByFingerPrintQuality  byte                             //指纹质量，范围1-100
 	ByRes                 [62]byte
 }
 type LPNET_DVR_CAPTURE_FINGERPRINT_CFG *NET_DVR_CAPTURE_FINGERPRINT_CFG
@@ -738,26 +694,27 @@ type LPNET_DVR_CAPTURE_FINGERPRINT_CFG *NET_DVR_CAPTURE_FINGERPRINT_CFG
 // 登录状态回调函数
 // true - 数据接收成功；false - 接收失败
 type MSGCallBack_V31 func(lCommand int, pAlarmer LPNET_DVR_ALARMER, pAlarmInfo *byte, dwBufLen uint32, pUser unsafe.Pointer) bool
+type MSGCallBack func(lCommand int, pAlarmer LPNET_DVR_ALARMER, pAlarmInfo *byte, dwBufLen uint32, pUser unsafe.Pointer)
 
-//报警设备信息
+// 报警设备信息
 type NET_DVR_ALARMER struct {
-	ByUserIDValid     byte               /* userid是否有效 0-无效，1-有效 */
-	BySerialValid     byte               /* 序列号是否有效 0-无效，1-有效 */
-	ByVersionValid    byte               /* 版本号是否有效 0-无效，1-有效 */
-	ByDeviceNameValid byte               /* 设备名字是否有效 0-无效，1-有效 */
-	ByMacAddrValid    byte               /* MAC地址是否有效 0-无效，1-有效 */
-	ByLinkPortValid   byte               /* login端口是否有效 0-无效，1-有效 */
-	ByDeviceIPValid   byte               /* 设备IP是否有效 0-无效，1-有效 */
-	BySocketIPValid   byte               /* socket ip是否有效 0-无效，1-有效 */
-	LUserID           int                /* NET_DVR_Login()返回值, 布防时有效 */
-	SSerialNumber     [SERIALNO_LEN]byte /* 序列号 */
-	DwDeviceVersion   uint32             /* 版本信息 高16位表示主版本，低16位表示次版本*/
-	SDeviceName       [NAME_LEN]byte     /* 设备名字 */
-	ByMacAddr         [MACADDR_LEN]byte  /* MAC地址 */
-	WLinkPort         uint16             /* link port */
-	SDeviceIP         [128]byte          /* IP地址 */
-	SSocketIP         [128]byte          /* 报警主动上传时的socket IP地址 */
-	ByIpProtocol      byte               /* Ip协议 0-IPV4, 1-IPV6 */
+	ByUserIDValid     byte                     /* userid是否有效 0-无效，1-有效 */
+	BySerialValid     byte                     /* 序列号是否有效 0-无效，1-有效 */
+	ByVersionValid    byte                     /* 版本号是否有效 0-无效，1-有效 */
+	ByDeviceNameValid byte                     /* 设备名字是否有效 0-无效，1-有效 */
+	ByMacAddrValid    byte                     /* MAC地址是否有效 0-无效，1-有效 */
+	ByLinkPortValid   byte                     /* login端口是否有效 0-无效，1-有效 */
+	ByDeviceIPValid   byte                     /* 设备IP是否有效 0-无效，1-有效 */
+	BySocketIPValid   byte                     /* socket ip是否有效 0-无效，1-有效 */
+	LUserID           types.LONG               /* NET_DVR_Login()返回值, 布防时有效 */
+	SSerialNumber     [types.SERIALNO_LEN]byte /* 序列号 */
+	DwDeviceVersion   types.DWORD              /* 版本信息 高16位表示主版本，低16位表示次版本*/
+	SDeviceName       [types.NAME_LEN]byte     /* 设备名字 */
+	ByMacAddr         [types.MACADDR_LEN]byte  /* MAC地址 */
+	WLinkPort         types.WORD               /* link port */
+	SDeviceIP         [128]byte                /* IP地址 */
+	SSocketIP         [128]byte                /* 报警主动上传时的socket IP地址 */
+	ByIpProtocol      byte                     /* Ip协议 0-IPV4, 1-IPV6 */
 	ByRes1            [2]byte
 	BJSONBroken       byte //JSON断网续传标志。0：不续传；1：续传
 	WSocketPort       uint32
@@ -804,13 +761,13 @@ type LPNET_DVR_SETUPALARM_PARAM *NET_DVR_SETUPALARM_PARAM
 // See https://open.hikvision.com/hardware/structures/NET_DVR_ACS_ALARM_INFO.html
 type NET_DVR_ACS_ALARM_INFO struct {
 	DwSize               uint32
-	DwMajor              uint32                 //报警主类型，参考宏定义
-	DwMinor              uint32                 //报警次类型，参考宏定义
-	StruTime             NET_DVR_TIME           //时间
-	SNetUser             [MAX_NAMELEN]byte      //网络操作的用户名
-	StruRemoteHostAddr   NET_DVR_IPADDR         //远程主机地址
-	StruAcsEventInfo     NET_DVR_ACS_EVENT_INFO //详细参数
-	DwPicDataLen         uint32                 //图片数据大小，不为0是表示后面带数据
+	DwMajor              uint32                  //报警主类型，参考宏定义
+	DwMinor              uint32                  //报警次类型，参考宏定义
+	StruTime             NET_DVR_TIME            //时间
+	SNetUser             [types.MAX_NAMELEN]byte //网络操作的用户名
+	StruRemoteHostAddr   NET_DVR_IPADDR          //远程主机地址
+	StruAcsEventInfo     NET_DVR_ACS_EVENT_INFO  //详细参数
+	DwPicDataLen         uint32                  //图片数据大小，不为0是表示后面带数据
 	PPicData             *byte
 	WInductiveEventType  uint16 //归纳事件类型，0-无效，客户端判断该值为非0值后，报警类型通过归纳事件类型区分，否则通过原有报警主次类型（dwMajor、dwMinor）区分
 	ByPicTransType       byte   //图片数据传输方式: 0-二进制；1-url
@@ -833,28 +790,28 @@ type LPNET_DVR_IPADDR *NET_DVR_IPADDR
 // 详细参数
 type NET_DVR_ACS_EVENT_INFO struct {
 	DwSize                         uint32
-	ByCardNo                       [ACS_CARD_NO_LEN]byte //卡号，为0无效
-	ByCardType                     byte                  //卡类型，1-普通卡，2-残疾人卡，3-黑名单卡，4-巡更卡，5-胁迫卡，6-超级卡，7-来宾卡，8-解除卡，为0无效
-	ByWhiteListNo                  byte                  //白名单单号,1-8，为0无效
-	ByReportChannel                byte                  //报告上传通道，1-布防上传，2-中心组1上传，3-中心组2上传，为0无效
-	ByCardReaderKind               byte                  //读卡器属于哪一类，0-无效，1-IC读卡器，2-身份证读卡器，3-二维码读卡器,4-指纹头
-	DwCardReaderNo                 uint32                //读卡器编号，为0无效
-	DwDoorNo                       uint32                //门编号(楼层编号)，为0无效（当接的设备为人员通道设备时，门1为进方向，门2为出方向）
-	DwVerifyNo                     uint32                //多重卡认证序号，为0无效
-	DwAlarmInNo                    uint32                //报警输入号，为0无效
-	DwAlarmOutNo                   uint32                //报警输出号，为0无效
-	DwCaseSensorNo                 uint32                //事件触发器编号
-	DwRs485No                      uint32                //RS485通道号，为0无效
-	DwMultiCardGroupNo             uint32                //群组编号
-	WAccessChannel                 uint16                //人员通道号
-	ByDeviceNo                     byte                  //设备编号，为0无效
-	ByDistractControlNo            byte                  //分控器编号，为0无效
-	DwEmployeeNo                   uint32                //工号，为0无效
-	WLocalControllerID             uint16                //就地控制器编号，0-门禁主机，1-64代表就地控制器
-	ByInternetAccess               byte                  //网口ID：（1-上行网口1,2-上行网口2,3-下行网口1）
-	ByType                         byte                  //防区类型，0:即时防区,1-24小时防区,2-延时防区 ,3-内部防区，4-钥匙防区 5-火警防区 6-周界防区 7-24小时无声防区  8-24小时辅助防区，9-24小时震动防区,10-门禁紧急开门防区，11-门禁紧急关门防区 0xff-无
-	ByMACAddr                      [MACADDR_LEN]byte     //物理地址，为0无效
-	BySwipeCardType                byte                  //刷卡类型，0-无效，1-二维码
+	ByCardNo                       [types.ACS_CARD_NO_LEN]byte //Card number, 0 is invalid
+	ByCardType                     byte                        //Card type, 1-regular card, 2-disabled card, 3-blacklist card, 4-patrol card, 5-compulsion card, 6-super card, 7-guest card, 8-release card, 0 invalid
+	ByWhiteListNo                  byte                        //白名单单号,1-8，为0无效
+	ByReportChannel                byte                        //报告上传通道，1-布防上传，2-中心组1上传，3-中心组2上传，为0无效
+	ByCardReaderKind               byte                        //读卡器属于哪一类，0-无效，1-IC读卡器，2-身份证读卡器，3-二维码读卡器,4-指纹头
+	DwCardReaderNo                 uint32                      //读卡器编号，为0无效
+	DwDoorNo                       uint32                      //门编号(楼层编号)，为0无效（当接的设备为人员通道设备时，门1为进方向，门2为出方向）
+	DwVerifyNo                     uint32                      //多重卡认证序号，为0无效
+	DwAlarmInNo                    uint32                      //报警输入号，为0无效
+	DwAlarmOutNo                   uint32                      //报警输出号，为0无效
+	DwCaseSensorNo                 uint32                      //事件触发器编号
+	DwRs485No                      uint32                      //RS485通道号，为0无效
+	DwMultiCardGroupNo             uint32                      //群组编号
+	WAccessChannel                 uint16                      //人员通道号
+	ByDeviceNo                     byte                        //设备编号，为0无效
+	ByDistractControlNo            byte                        //分控器编号，为0无效
+	DwEmployeeNo                   uint32                      //工号，为0无效
+	WLocalControllerID             uint16                      //就地控制器编号，0-门禁主机，1-64代表就地控制器
+	ByInternetAccess               byte                        //网口ID：（1-上行网口1,2-上行网口2,3-下行网口1）
+	ByType                         byte                        //防区类型，0:即时防区,1-24小时防区,2-延时防区 ,3-内部防区，4-钥匙防区 5-火警防区 6-周界防区 7-24小时无声防区  8-24小时辅助防区，9-24小时震动防区,10-门禁紧急开门防区，11-门禁紧急关门防区 0xff-无
+	ByMACAddr                      [types.MACADDR_LEN]byte     //物理地址，为0无效
+	BySwipeCardType                byte                        //刷卡类型，0-无效，1-二维码
 	ByRes2                         byte
 	DwSerialNo                     uint16 //事件流水号，为0无效
 	ByChannelControllerID          byte   //通道控制器ID，为0无效，1-主通道控制器，2-从通道控制器

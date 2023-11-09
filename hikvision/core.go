@@ -1,34 +1,22 @@
 package hikvision
 
 /*
-// 定义系统:
-// 1 = Windows
-// 2 = Linux
-// 3 = Darwin
-#cgo windows CFLAGS: -DCGO_OS=1
-#cgo linux 	 CFLAGS: -DCGO_OS=2
-#cgo darwin  CFLAGS: -DCGO_OS=3
-
-// 头文件
 #cgo CFLAGS: -I../include
+#cgo linux LDFLAGS: -L${SRCDIR}/../lib/linux64 -Wl,-rpath=./lib/linux64  -lhcnetsdk
+#cgo windows LDFLAGS: -L${SRCDIR}/../lib/win64 -Wl,-rpath=./lib/win64  -lHCNetSDK
+
 #include "HCNetSDK.h"
 
-// 引入动态链接库
-#if 1==CGO_OS
-    #cgo LDFLAGS: -L${SRCDIR}/../lib/win64 -lHCNetSDK
-#elif 2==CGO_OS || 3==CGO_OS
-    #cgo LDFLAGS: -L${SRCDIR}/../lib/linux64 -lhcnetsdk
-#else
-    #error("Unknow OS")
-#endif
 
 //----------------- See `cfuns.go` file -----------------
 void fLoginResultCallBack_cgo (int lUserID, unsigned int dwResult, void* lpDeviceInfo, void* pUser);
 void fRemoteConfigCallback_cgo (DWORD dwType, void* lpBuffer, DWORD dwBufLen, void* pUserData);
 BOOL msgCallBack_V31_cgo (LONG lCommand, void* pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
+void msgCallBack_cgo (LONG lCommand, void* pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
 */
 import "C"
 import (
+	"github.com/lxShaDoWxl/HCNetSDK-go/hikvision/types"
 	"unsafe"
 )
 
@@ -36,9 +24,10 @@ import (
 
 // 设置SDK初始化参数。
 // exapmle:
-//    p := hikvision.NET_DVR_LOCAL_SDK_PATH{}
-//    copy(p.SPath[:], "/usr/lib/hikvision")
-//    result := hik.NET_DVR_SetSDKInitCfg(hikvision.NET_SDK_INIT_CFG_SDK_PATH, unsafe.Pointer(&p))
+//
+//	p := hikvision.NET_DVR_LOCAL_SDK_PATH{}
+//	copy(p.SPath[:], "/usr/lib/hikvision")
+//	result := hik.NET_DVR_SetSDKInitCfg(hikvision.NET_SDK_INIT_CFG_SDK_PATH, unsafe.Pointer(&p))
 func NET_DVR_SetSDKInitCfg(enumType NET_SDK_INIT_CFG_TYPE, lpInBuff unsafe.Pointer) bool {
 	return goBOOL(C.NET_DVR_SetSDKInitCfg(
 		(C.NET_SDK_INIT_CFG_TYPE)(enumType),
@@ -56,19 +45,53 @@ func NET_DVR_Cleanup() bool {
 	return goBOOL(C.NET_DVR_Cleanup())
 }
 
+/************************* config parameter begin *************************/
+
+// NET_DVR_GetDVRConfig
+// BOOL __stdcall NET_DVR_GetDVRConfig(LONG lUserID, DWORD dwCommand,LONG lChannel, LPVOID lpOutBuffer, DWORD dwOutBufferSize, LPDWORD lpBytesReturned);
+func NET_DVR_GetDVRConfig[T types.DvrCfg](lUserID int, dwCommand uint16, lChannel int, cfg *T) bool {
+	var (
+		//cfg2
+		l uint
+	)
+	result := goBOOL(C.NET_DVR_GetDVRConfig(
+		C.LONG(lUserID),
+		C.DWORD(dwCommand),
+		C.LONG(lChannel),
+		C.LPVOID(unsafe.Pointer(cfg)),
+		C.DWORD(unsafe.Sizeof(*cfg)),
+		(*C.uint)(unsafe.Pointer(&l)),
+	))
+	return result
+}
+
+// NET_DVR_SetDVRConfig
+// BOOL __stdcall NET_DVR_SetDVRConfig(LONG lUserID, DWORD dwCommand,LONG lChannel, LPVOID lpInBuffer, DWORD dwInBufferSize);
+func NET_DVR_SetDVRConfig[T types.DvrCfg](lUserID int, dwCommand uint16, lChannel int, cfg *T) bool {
+
+	return goBOOL(C.NET_DVR_SetDVRConfig(
+		C.LONG(lUserID),
+		C.DWORD(dwCommand),
+		C.LONG(lChannel),
+		C.LPVOID(unsafe.Pointer(cfg)),
+		C.DWORD(unsafe.Sizeof(*cfg)),
+	))
+}
+
 /************************* SDK 本地功能 *************************/
 
 //------------------------ 设置/获取SDK本地参数配置 ------------------------
 
 // 设置SDK本地参数配置
 // example:
-//    p := hik.NET_DVR_LOCAL_TCP_PORT_BIND_CFG{}
-//    p.WLocalBindTcpMinPort = 2000
-//    p.WLocalBindTcpMaxPort = 3000
-//    result := hik.NET_DVR_SetSDKLocalCfg(
-//        hik.NET_SDK_LOCAL_CFG_TYPE_TCP_PORT_BIND,
-//        unsafe.Pointer(&p),
-//    )
+//
+//	p := hik.NET_DVR_LOCAL_TCP_PORT_BIND_CFG{}
+//	p.WLocalBindTcpMinPort = 2000
+//	p.WLocalBindTcpMaxPort = 3000
+//	result := hik.NET_DVR_SetSDKLocalCfg(
+//	    hik.NET_SDK_LOCAL_CFG_TYPE_TCP_PORT_BIND,
+//	    unsafe.Pointer(&p),
+//	)
 func NET_DVR_SetSDKLocalCfg(enumType NET_SDK_LOCAL_CFG_TYPE, lpInBuff unsafe.Pointer) bool {
 	return goBOOL(C.NET_DVR_SetSDKLocalCfg(
 		(C.NET_SDK_LOCAL_CFG_TYPE)(enumType),
@@ -78,11 +101,12 @@ func NET_DVR_SetSDKLocalCfg(enumType NET_SDK_LOCAL_CFG_TYPE, lpInBuff unsafe.Poi
 
 // 获取SDK本地参数配置
 // example:
-//    p := hik.NET_DVR_LOCAL_TCP_PORT_BIND_CFG{}
-//    result := hik.NET_DVR_GetSDKLocalCfg(
-//        hik.NET_SDK_LOCAL_CFG_TYPE_TCP_PORT_BIND,
-//        unsafe.Pointer(&p),
-//    )
+//
+//	p := hik.NET_DVR_LOCAL_TCP_PORT_BIND_CFG{}
+//	result := hik.NET_DVR_GetSDKLocalCfg(
+//	    hik.NET_SDK_LOCAL_CFG_TYPE_TCP_PORT_BIND,
+//	    unsafe.Pointer(&p),
+//	)
 func NET_DVR_GetSDKLocalCfg(enumType NET_SDK_LOCAL_CFG_TYPE, lpOutBuff unsafe.Pointer) bool {
 	return goBOOL(C.NET_DVR_GetSDKLocalCfg(
 		(C.NET_SDK_LOCAL_CFG_TYPE)(enumType),
@@ -118,10 +142,11 @@ func NET_DVR_SetReconnect(dwInterval int32, bEnableRecon bool) bool {
 
 // 获取所有IP，用于支持多网卡接口
 // example:
-//    ips := [16][16]byte{}
-//    var num uint32 = 0
-//    bind := false
-//    result := hik.NET_DVR_GetLocalIP(&ips, &num, &bind)
+//
+//	ips := [16][16]byte{}
+//	var num uint32 = 0
+//	bind := false
+//	result := hik.NET_DVR_GetLocalIP(&ips, &num, &bind)
 func NET_DVR_GetLocalIP(strIP *[16][16]byte, pValidNum *uint32, pEnableBind *bool) bool {
 	// GO byte 矩阵转成 C char 矩阵
 	buf := [16][16]C.char{}
@@ -213,8 +238,9 @@ func NET_DVR_GetSDKBuildVersion() uint32 {
 
 // 获取当前SDK的状态信息
 // example:
-//    p := hik.NET_DVR_SDKSTATE{}
-//    result := hik.NET_DVR_GetSDKState(&p)
+//
+//	p := hik.NET_DVR_SDKSTATE{}
+//	result := hik.NET_DVR_GetSDKState(&p)
 func NET_DVR_GetSDKState(pSDKState LPNET_DVR_SDKSTATE) bool {
 	return goBOOL(C.NET_DVR_GetSDKState(
 		C.LPNET_DVR_SDKSTATE(unsafe.Pointer(pSDKState)),
@@ -223,8 +249,9 @@ func NET_DVR_GetSDKState(pSDKState LPNET_DVR_SDKSTATE) bool {
 
 // 获取当前SDK的功能信息
 // example:
-//    p := hik.NET_DVR_SDKABL{}
-//    result := hik.NET_DVR_GetSDKAbility(&p)
+//
+//	p := hik.NET_DVR_SDKABL{}
+//	result := hik.NET_DVR_GetSDKAbility(&p)
 func NET_DVR_GetSDKAbility(pSDKAbl LPNET_DVR_SDKABL) bool {
 	return goBOOL(C.NET_DVR_GetSDKAbility(
 		C.LPNET_DVR_SDKABL(unsafe.Pointer(pSDKAbl)),
@@ -235,8 +262,9 @@ func NET_DVR_GetSDKAbility(pSDKAbl LPNET_DVR_SDKABL) bool {
 
 // 启用写日志文件
 // example:
-//    usr, _ := user.Current()
-//    result := hik.NET_DVR_SetLogToFile(3, usr.HomeDir + "/hik.log", true)
+//
+//	usr, _ := user.Current()
+//	result := hik.NET_DVR_SetLogToFile(3, usr.HomeDir + "/hik.log", true)
 func NET_DVR_SetLogToFile(nLogLevel uint32, strLogDir string, bAutoDel bool) bool {
 	b := []byte(strLogDir)
 	return goBOOL(C.NET_DVR_SetLogToFile(
@@ -265,9 +293,10 @@ func NET_DVR_GetErrorMsg(pErrorNo int) string {
 
 // 通过解析服务器，获取设备的动态IP地址和端口号
 // example:
-//    sGetIP := [16]byte{}
-//    var dwPort uint32
-//    result := hik.NET_DVR_GetDVRIPByResolveSvr_EX(<your ipserver>, 7071, <device name>, <device serialNumber>, &sGetIP[0], &dwPort)
+//
+//	sGetIP := [16]byte{}
+//	var dwPort uint32
+//	result := hik.NET_DVR_GetDVRIPByResolveSvr_EX(<your ipserver>, 7071, <device name>, <device serialNumber>, &sGetIP[0], &dwPort)
 func NET_DVR_GetDVRIPByResolveSvr_EX(
 	sServerIP string, wServerPort uint16, sDVRName string,
 	sDVRSerialNumber string, sGetIP *byte, dwPort *uint32,
@@ -289,10 +318,11 @@ func NET_DVR_GetDVRIPByResolveSvr_EX(
 
 // 激活设备
 // example:
-//    config := hik.NET_DVR_ACTIVATECFG{}
-//    copy(config.SPassword[:], <initial password>)
-//    config.DwSize = uint32(unsafe.Sizeof(config))
-//    result := hik.NET_DVR_ActivateDevice("192.168.8.110", 8000, &config)
+//
+//	config := hik.NET_DVR_ACTIVATECFG{}
+//	copy(config.SPassword[:], <initial password>)
+//	config.DwSize = uint32(unsafe.Sizeof(config))
+//	result := hik.NET_DVR_ActivateDevice("192.168.8.110", 8000, &config)
 func NET_DVR_ActivateDevice(sDVRIP string, wDVRPort uint16, lpActivateCfg LPNET_DVR_ACTIVATECFG) bool {
 	return goBOOL(C.NET_DVR_ActivateDevice(
 		(*C.char)(unsafe.Pointer(&[]byte(sDVRIP)[0])),
@@ -303,24 +333,25 @@ func NET_DVR_ActivateDevice(sDVRIP string, wDVRPort uint16, lpActivateCfg LPNET_
 
 // 用户注册设备（支持异步登录）
 // example:
-//    loginInfo := hik.NET_DVR_USER_LOGIN_INFO{}
-//	  deviceInfo := hik.NET_DVR_DEVICEINFO_V40{}
 //
-//    copy(loginInfo.SDeviceAddress[:], "192.168.8.110")
-//    loginInfo.WPort = 8000
-//    loginInfo.ByUseTransport = 0
-//    loginInfo.BUseAsynLogin = 0
-//    copy(loginInfo.SUserName[:], <your username>)
-//    copy(loginInfo.SPassword[:], <your password>)
-//    loginInfo.CbLoginResult = func(lUserID int, dwResult uint32, lpDeviceInfo hik.LPNET_DVR_DEVICEINFO_V30, pUser unsafe.Pointer) {
-//        if 1 == dwResult {
-//            fmt.Println("异步登陆成功，userId: ", strconv.Itoa(lUserID))
-//            fmt.Println("设备序列号: ", string(lpDeviceInfo.SSerialNumber[:]))
-//        } else {
-//            fmt.Println("异步登陆失败")
-//        }
-//    }
-//    result := hik.NET_DVR_Login_V40(&loginInfo, &deviceInfo)
+//	   loginInfo := hik.NET_DVR_USER_LOGIN_INFO{}
+//		  deviceInfo := hik.NET_DVR_DEVICEINFO_V40{}
+//
+//	   copy(loginInfo.SDeviceAddress[:], "192.168.8.110")
+//	   loginInfo.WPort = 8000
+//	   loginInfo.ByUseTransport = 0
+//	   loginInfo.BUseAsynLogin = 0
+//	   copy(loginInfo.SUserName[:], <your username>)
+//	   copy(loginInfo.SPassword[:], <your password>)
+//	   loginInfo.CbLoginResult = func(lUserID int, dwResult uint32, lpDeviceInfo hik.LPNET_DVR_DEVICEINFO_V30, pUser unsafe.Pointer) {
+//	       if 1 == dwResult {
+//	           fmt.Println("异步登陆成功，userId: ", strconv.Itoa(lUserID))
+//	           fmt.Println("设备序列号: ", string(lpDeviceInfo.SSerialNumber[:]))
+//	       } else {
+//	           fmt.Println("异步登陆失败")
+//	       }
+//	   }
+//	   result := hik.NET_DVR_Login_V40(&loginInfo, &deviceInfo)
 func NET_DVR_Login_V40(pLoginInfo LPNET_DVR_USER_LOGIN_INFO, lpDeviceInfo LPNET_DVR_DEVICEINFO_V40) int {
 	// 缓存回调函数
 	loginChan <- pLoginInfo.CbLoginResult
@@ -392,6 +423,7 @@ func NET_DVR_StartRemoteConfig(lUserID int, dwCommand uint32, lpInBuffer unsafe.
 }
 
 // 远程配置回调函数
+//
 //export fRemoteConfigCallbackGo
 func fRemoteConfigCallbackGo(dwType uint32, lpBuffer unsafe.Pointer, dwBufLen uint32, pUserData unsafe.Pointer) {
 	errMsg := "Not found `FRemoteConfigCallback` function in fRemoteConfigCallbackGo function."
@@ -429,7 +461,91 @@ func NET_DVR_StopRemoteConfig(lHandle int) bool {
 	return goBOOL(C.NET_DVR_StopRemoteConfig(C.LONG(lHandle)))
 }
 
+/************************* Управление слушателем тревоги и событий *************************/
+
+// NET_DVR_StartListen_V30 добавление слушателя
+// LONG __stdcall NET_DVR_StartListen_V30(char *sLocalIP, WORD wLocalPort, MSGCallBack DataCallback, void* pUserData /*= NULL*/);
+func NET_DVR_StartListen_V30(sLocalIP string, wLocalPort uint16, fMessageCallBack MSGCallBack, pUser unsafe.Pointer) int {
+	cache := dvrMsgCbListenerConf{}
+	cache.cb = fMessageCallBack
+	// Инициализируйте pUserData, значение будет возвращено в функции обратного вызова cgo
+	if nil == pUser {
+		cbTokenId := 0
+		pUser = unsafe.Pointer(&cbTokenId)
+		cache.innerInitial = true
+	}
+	// Сохраните функцию обратного вызова golang, получите и вызовите функцию golang через функцию обратного вызова cgo и адрес pUserData.
+	index := uintptr(pUser)
+	dvrMsgCbListenerMap[index] = cache
+
+	return int(C.NET_DVR_StartListen_V30(
+		C.CString(sLocalIP),
+		C.WORD(wLocalPort),
+		(C.MSGCallBack)(C.msgCallBack_cgo),
+		pUser,
+	))
+}
+
+// NET_DVR_StopListen_V30 остановка слушателя
+// BOOL __stdcall NET_DVR_StopListen_V30(LONG lListenHandle);
+func NET_DVR_StopListen_V30(lListenHandle int) bool {
+	return goBOOL(C.NET_DVR_StopListen_V30(C.LONG(lListenHandle)))
+}
+
+// key: pUser's pointer
+// value: cached function
+var dvrMsgCbListenerMap = make(map[uintptr]dvrMsgCbListenerConf)
+
+// Настройка функции обратного вызова
+type dvrMsgCbListenerConf struct {
+	cb MSGCallBack
+	// pUserData Является ли это внутренней инициализацией
+	innerInitial bool
+}
+
+// Функция обратного вызова для слушателя тревоги
+//
+//export msgCallBack_Go
+func msgCallBack_Go(lCommand int, pAlarmer C.LPNET_DVR_ALARMER, pAlarmInfo *byte, dwBufLen uint32, pUser unsafe.Pointer) {
+	errMsg := "Not found `MSGCallBack` function in msgCallBack_Go function."
+	// Запросите функцию golang на основе адреса pUserData. Если он равен нулю, его невозможно найти.
+	if nil == pUser {
+		panic(errMsg)
+	}
+	// функция обратного вызова, определенная golang
+	conf := dvrMsgCbListenerMap[uintptr(pUser)]
+	// Функция обратного вызова не существует
+	if nil == conf.cb {
+		panic(errMsg)
+	}
+	// Внутренняя инициализация, очистка pUserData
+	if conf.innerInitial {
+		pUser = nil
+	}
+
+	conf.cb(lCommand, (LPNET_DVR_ALARMER)(unsafe.Pointer(pAlarmer)), pAlarmInfo, dwBufLen, pUser)
+}
+
 /************************* 报警布防 *************************/
+
+func NET_DVR_SetDVRMessageCallBack_V30(fMessageCallBack MSGCallBack, pUser unsafe.Pointer) bool {
+	cache := dvrMsgCbListenerConf{}
+	cache.cb = fMessageCallBack
+	// 初始化 pUserData，该值会在 cgo 回调函数中返回
+	if nil == pUser {
+		cbTokenId := 0
+		pUser = unsafe.Pointer(&cbTokenId)
+		cache.innerInitial = true
+	}
+	// 保存 golang 回调函数，通过 cgo 回调函数，通过 pUserData 的地址，获取和调用 golang 的函数
+	index := uintptr(pUser)
+	dvrMsgCbListenerMap[index] = cache
+
+	return goBOOL(C.NET_DVR_SetDVRMessageCallBack_V30(
+		(C.MSGCallBack)(C.msgCallBack_cgo),
+		pUser,
+	))
+}
 
 // 注册回调函数，接收设备报警消息等
 func NET_DVR_SetDVRMessageCallBack_V31(fMessageCallBack MSGCallBack_V31, pUser unsafe.Pointer) bool {
@@ -463,6 +579,7 @@ type dvrMsgCbConf struct {
 }
 
 // 报警布防回调函数
+//
 //export msgCallBack_V31_Go
 func msgCallBack_V31_Go(lCommand int, pAlarmer C.LPNET_DVR_ALARMER, pAlarmInfo *byte, dwBufLen uint32, pUser unsafe.Pointer) C.BOOL {
 	errMsg := "Not found `MSGCallBack_V31` function in msgCallBack_V31_Go function."
@@ -486,7 +603,8 @@ func msgCallBack_V31_Go(lCommand int, pAlarmer C.LPNET_DVR_ALARMER, pAlarmInfo *
 	return cBOOL(conf.cb(lCommand, _pAlarmer, pAlarmInfo, dwBufLen, pUser))
 }
 
-// 建立报警上传通道，获取报警等信息
+// NET_DVR_SetupAlarmChan_V41 建立报警上传通道，获取报警等信息
+// LONG __stdcall NET_DVR_SetupAlarmChan_V41(LONG lUserID, LPNET_DVR_SETUPALARM_PARAM lpSetupParam);
 func NET_DVR_SetupAlarmChan_V41(lUserID int, lpSetupParam LPNET_DVR_SETUPALARM_PARAM) int {
 	return int(C.NET_DVR_SetupAlarmChan_V41(
 		C.LONG(lUserID),

@@ -1,3 +1,5 @@
+EN-HCNetSDKV6.1.9.4_build20220412_linux64
+
 # HCNetSDK-go
 海康威视
 
