@@ -14,6 +14,7 @@ type Device interface {
 	Login() (int, error)
 	Logout() error
 	GetIP() string
+	GetDeviceInfo() hik.NET_DVR_DEVICEINFO_V40
 	AlarmArmingMode(ctx context.Context, msgCallback hik.MSGCallBack_V31) error
 	AlarmListeningMode(ctx context.Context, msgCallback hik.MSGCallBack, port uint16, ip string) error
 	GetCard(ctx context.Context, cardId string) (types.NET_DVR_CARD_CFG_V50, error)
@@ -52,6 +53,9 @@ func NewHKDevice(info Info) Device {
 }
 func (d *HKDevice) GetIP() string {
 	return d.ip
+}
+func (d *HKDevice) GetDeviceInfo() hik.NET_DVR_DEVICEINFO_V40 {
+	return d.deviceInfo
 }
 
 // Login hk device loin
