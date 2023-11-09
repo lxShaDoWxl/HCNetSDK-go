@@ -353,10 +353,12 @@ func NET_DVR_ActivateDevice(sDVRIP string, wDVRPort uint16, lpActivateCfg LPNET_
 //	   }
 //	   result := hik.NET_DVR_Login_V40(&loginInfo, &deviceInfo)
 func NET_DVR_Login_V40(pLoginInfo LPNET_DVR_USER_LOGIN_INFO, lpDeviceInfo LPNET_DVR_DEVICEINFO_V40) int {
-	// 缓存回调函数
-	loginChan <- pLoginInfo.CbLoginResult
-	// 使用 C 的回调函数，此函数会调用 golang 的函数
+	if pLoginInfo.BUseAsynLogin == 1 {
+		// Функция обратного вызова кэша
+		loginChan <- pLoginInfo.CbLoginResult
+	}
 	var _pLoginInfo C.LPNET_DVR_USER_LOGIN_INFO = C.LPNET_DVR_USER_LOGIN_INFO(unsafe.Pointer(pLoginInfo))
+	// Используйте функцию обратного вызова C, которая вызовет функцию golang.
 	(*_pLoginInfo).cbLoginResult = (C.fLoginResultCallBack)(C.fLoginResultCallBack_cgo)
 	result := int(C.NET_DVR_Login_V40(
 		_pLoginInfo,
