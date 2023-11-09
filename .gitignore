@@ -19,6 +19,8 @@
 # idea
 .idea
 *.iml
+.run
 
 # go build result
 HCNetSDK-go
+example
