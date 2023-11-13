@@ -14,12 +14,14 @@ type Device interface {
 	Login() (int, error)
 	Logout() error
 	GetIP() string
+	GetLoginId() int
 	GetDeviceInfo() hik.NET_DVR_DEVICEINFO_V40
 	AlarmArmingMode(ctx context.Context, msgCallback hik.MSGCallBack_V31) error
 	AlarmListeningMode(ctx context.Context, msgCallback hik.MSGCallBack, port uint16, ip string) error
 	GetCard(ctx context.Context, cardId string) (types.NET_DVR_CARD_CFG_V50, error)
 	AddCard(ctx context.Context, cardId string) error
 	RemoveCard(ctx context.Context, cardId string) error
+	GetTime() (types.NET_DVR_TIME, error)
 	//SetAlarmCallBack() error
 	//StartListenAlarmMsg() error
 	//StopListenAlarmMsg() error
@@ -53,6 +55,9 @@ func NewHKDevice(info Info) Device {
 }
 func (d *HKDevice) GetIP() string {
 	return d.ip
+}
+func (d *HKDevice) GetLoginId() int {
+	return d.loginId
 }
 func (d *HKDevice) GetDeviceInfo() hik.NET_DVR_DEVICEINFO_V40 {
 	return d.deviceInfo
@@ -317,4 +322,19 @@ func (d *HKDevice) Logout() error {
 		return err
 	}
 	return nil
+}
+
+func (d *HKDevice) GetTime() (types.NET_DVR_TIME, error) {
+	cfg := types.NET_DVR_TIME{}
+	success := hik.NET_DVR_GetDVRConfig(
+		d.loginId,
+		types.NET_DVR_GET_TIMECFG,
+		0,
+		&cfg,
+	)
+	if !success {
+		return cfg, hik.HKErr("GetTime.NET_DVR_GetDVRConfig", d.ip)
+
+	}
+	return cfg, nil
 }
